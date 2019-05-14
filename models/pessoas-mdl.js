@@ -17,7 +17,7 @@ const findById = (connection, id) => {
                     reject(err)
                 } else {
                     if (results.length > 0) {
-                        resolve(results)
+                        resolve(results[0])
                     } else {
                         resolve({})
                     }
