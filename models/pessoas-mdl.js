@@ -1,12 +1,30 @@
-const findAll = (connection) => {
+const findAll = (connection, params) => {
     return new Promise((resolve, reject) => {
-        connection.query('select * from pessoas', (err, results) => {
+        const offset = params.currentPage * params.pageSize
+        const pageSize = params.pageSize
+        connection.query('select count(*) as total from pessoas', (err, result) => {
+            const total = result[0].total
+            const totalPages = parseInt(total / pageSize)
             if (err) {
                 reject(err)
             } else {
-                resolve(results)
+                connection.query(`select * from pessoas limit ${offset}, ${pageSize}`, (err, results) => {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve({
+                            data: results,
+                            pagination: {
+                                pages: totalPages,
+                                pageSize,
+                                currentPage: parseInt(params.currentPage)
+                            }
+                        })
+                    }
+                })
             }
         })
+
     })
 }
 
